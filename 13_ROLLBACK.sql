@@ -1,6 +1,44 @@
 -- =============================================
 -- ROLLBACK Operations Guide
 -- =============================================
+/*
+-- ROLLBACK Complete Guide
+-- The ROLLBACK statement in SQL Server undoes all data modifications made since the beginning of a transaction or savepoint. It's a critical component of transaction management that ensures data integrity by providing the ability to revert changes when errors occur or when business rules are violated.
+
+Facts and Notes:
+- Undoes all transaction modifications
+- Can rollback to specific savepoints
+- Supports both ROLLBACK TRANSACTION and ROLLBACK WORK syntax
+- Releases all transaction-related locks
+- Decrements @@TRANCOUNT to 0 (except for savepoint rollbacks)
+- Cannot be undone once executed
+- Works with both local and distributed transactions
+- Automatic rollback occurs on connection termination
+
+Important Considerations:
+- Rolling back nested transactions affects all inner transactions
+- Resource intensive for large transactions
+- Savepoint rollbacks maintain outer transaction
+- Transaction log space required for potential rollbacks
+- Implicit rollback occurs on server shutdown
+- Cannot rollback committed transactions
+- Proper error handling crucial for rollback scenarios
+- Impact on tempdb and transaction log space
+
+1. Basic ROLLBACK: This section demonstrates fundamental usage of ROLLBACK statement to undo transaction changes when errors occur or conditions aren't met.
+2. ROLLBACK with Save Points: This section shows using savepoints to create restoration points within transactions, allowing partial rollbacks while maintaining transaction integrity.
+3. ROLLBACK WORK: This section illustrates using the ANSI SQL standard ROLLBACK WORK syntax for better code portability and compliance.
+4. Nested Transaction ROLLBACK: This section covers managing rollbacks in nested transaction scenarios, including scope and impact on parent transactions.
+5. ROLLBACK with Multiple Save Points: This section demonstrates managing multiple savepoints within a transaction for fine-grained control over rollbacks.
+6. ROLLBACK with Error Handling: This section shows implementing comprehensive error handling with proper transaction state verification and rollback procedures.
+7. ROLLBACK with Distributed Transaction: This section covers managing rollbacks in distributed transaction scenarios across multiple databases or servers.
+8. Partial ROLLBACK with Batch Operations: This section illustrates implementing partial rollbacks in batch processing scenarios using savepoints.
+9. ROLLBACK with Isolation Level: This section demonstrates managing rollbacks with different transaction isolation levels for consistency control.
+10. ROLLBACK with Performance Monitoring: This section shows tracking and logging rollback operations with performance metrics and error details.
+
+Author: Nikhil Shrivastav
+Date: February 2025
+*/
 
 USE HRSystem;
 GO

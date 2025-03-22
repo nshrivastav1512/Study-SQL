@@ -1,6 +1,42 @@
 -- =============================================
 -- BEGIN TRANSACTION Operations Guide
 -- =============================================
+/*
+-- BEGIN TRANSACTION Complete Guide
+-- Transactions in SQL Server are units of work that provide data integrity and database consistency. They follow the ACID properties (Atomicity, Consistency, Isolation, Durability) and allow multiple operations to be treated as a single logical unit that either succeeds completely or fails completely.
+
+Facts and Notes:
+- Transactions can be explicit (user-defined) or implicit (auto-generated)
+- Supports nested transactions with @@TRANCOUNT tracking
+- Can be named or unnamed (anonymous)
+- Supports save points for partial rollbacks
+- Can be marked for easier identification in logs
+- Supports distributed transactions across multiple databases
+- Maximum nesting level is 32
+- Implicit transactions can be enabled using SET IMPLICIT_TRANSACTIONS ON
+
+Important Considerations:
+- Long-running transactions can impact system performance
+- Lock escalation may occur during large transactions
+- Nested transactions only roll back to outermost savepoint
+- Transaction logs grow during active transactions
+- Proper error handling is crucial for transaction management
+- Connection termination automatically rolls back active transactions
+- Different isolation levels affect concurrency and consistency
+- Resource locks should be managed carefully to prevent deadlocks
+
+1. Basic Transaction: This section demonstrates fundamental transaction structure with error handling, including basic commit and rollback operations with TRY-CATCH blocks.
+2. Named Transaction: This section shows how to create and manage named transactions, providing better identification and control over specific transaction blocks.
+3. Nested Transactions: This section illustrates handling nested transaction scopes, including proper management of transaction counts and rollback scenarios.
+4. Transaction with Save Points: This section covers using save points within transactions to allow partial rollbacks while maintaining data consistency.
+5. Marked Transaction: This section demonstrates marking transactions for better tracking and logging in transaction logs and monitoring tools.
+6. Transaction with Isolation Level: This section shows how to set and use different transaction isolation levels to manage concurrency and data consistency.
+7. Distributed Transaction: This section covers managing transactions across multiple databases or servers, including proper coordination and error handling.
+8. Transaction with Error Handling and State Check: This section illustrates comprehensive error handling with transaction state verification using XACT_STATE().
+
+Author: Nikhil Shrivastav
+Date: February 2025
+*/
 
 USE HRSystem;
 GO

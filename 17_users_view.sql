@@ -1,6 +1,44 @@
 -- =============================================
 -- SQL Server User Query Guide
 -- =============================================
+/*
+-- User Query Complete Guide
+-- SQL Server provides various system views and dynamic management views (DMVs) for querying and monitoring user-related information. These views allow administrators to track user activities, permissions, roles, and security configurations across both server and database levels.
+
+Facts and Notes:
+- System views provide security principal information
+- DMVs show real-time user activity data
+- Supports both server and database level queries
+- Can track user permissions and role memberships
+- Monitors user connections and sessions
+- Identifies orphaned users automatically
+- Tracks object ownership and creation
+- Shows authentication and authorization details
+
+Important Considerations:
+- Regular security auditing recommended
+- System view permissions required for queries
+- Performance impact of frequent DMV queries
+- Historical data may require custom logging
+- Some views require elevated permissions
+- Results depend on current security context
+- Cross-database queries may be restricted
+- Regular cleanup of orphaned users needed
+
+1. View All Database Users: This section demonstrates querying database principals including users, roles, and groups.
+2. View Server Logins: This section shows how to retrieve server-level login information and status.
+3. View User-Role Memberships: This section covers querying role assignments and membership hierarchies.
+4. View User Permissions: This section illustrates detailed permission analysis for database users.
+5. View Orphaned Users: This section demonstrates identifying users without corresponding server logins.
+6. View User Default Schemas: This section shows querying user schema assignments and configurations.
+7. View Database Access: This section covers analyzing user access levels across databases.
+8. View Last Login Times: This section illustrates tracking user authentication history.
+9. View User-Created Objects: This section shows monitoring object ownership and creation.
+10. View Connection Information: This section demonstrates analyzing current user connections and sessions.
+
+Author: Nikhil Shrivastav
+Date: February 2025
+*/
 
 USE HRSystem;
 GO

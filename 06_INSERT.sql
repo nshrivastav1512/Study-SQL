@@ -1,6 +1,26 @@
 -- =============================================
 -- INSERT Operations Complete Guide
 -- =============================================
+/*
+-- INSERT Keyword Complete Guide
+-- The INSERT statement is a DML (Data Manipulation Language) command used to add new rows of data into a database table. It supports single-row insertion, multi-row insertion, and inserting data from other tables or result sets. The INSERT statement can be used with VALUES clause for direct data insertion, with SELECT statement for inserting query results, and with EXEC for inserting data from stored procedure results.
+
+1. Basic INSERT Statement: This section demonstrates the fundamental usage of INSERT statement with VALUES clause to add single and multiple rows, showing proper column listing, handling NULL values, and using default values while maintaining data integrity and type constraints.
+2. INSERT with SELECT Statement: This section illustrates how to insert data by querying from other tables, including filtering conditions, joining multiple tables, and using derived columns, while ensuring data consistency and handling potential duplicate records.
+3. Bulk INSERT Operations: This section covers techniques for inserting large volumes of data efficiently, including BULK INSERT command for file imports, table-valued parameters, and using temporary tables as staging areas, with consideration for transaction management and performance optimization.
+4. INSERT with IDENTITY Columns: This section explains working with identity columns, including IDENTITY_INSERT settings, retrieving generated identity values using SCOPE_IDENTITY(), and handling identity column reseeding scenarios while maintaining referential integrity.
+5. INSERT with Computed Columns: This section demonstrates inserting data into tables with computed columns, showing how to handle persisted vs. non-persisted computed columns, and understanding the implications of dependencies on other columns.
+6. INSERT with Triggers: This section covers considerations when inserting data into tables with INSERT triggers, including handling recursive triggers, managing trigger execution order, and ensuring data consistency across related tables.
+7. INSERT with Constraints: This section shows how to insert data while respecting various constraints including CHECK constraints, UNIQUE constraints, and FOREIGN KEY constraints, with proper error handling and validation.
+8. INSERT with Table Variables and Temporary Tables: This section illustrates inserting data into table variables and temporary tables, including scope considerations, session management, and performance implications.
+9. INSERT with OUTPUT Clause: This section demonstrates using the OUTPUT clause to capture inserted data, including inserted identity values, computed columns, and using the inserted virtual table for audit trailing and data verification.
+10. INSERT Error Handling: This section covers proper error handling techniques for INSERT operations, including TRY-CATCH blocks, handling constraint violations, and managing transaction rollbacks while maintaining data integrity.
+11. INSERT Performance Considerations: This section discusses optimization techniques for INSERT operations, including proper indexing strategies, minimizing logging, and managing lock escalation while balancing performance and concurrency.
+12. INSERT with Partitioned Tables: This section explains inserting data into partitioned tables, including partition scheme considerations, handling partition switching, and managing data distribution across partitions.
+
+Author: Nikhil Shrivastav
+Date: February 2025
+*/
 
 USE HRSystem;
 GO

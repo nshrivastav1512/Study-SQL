@@ -1,6 +1,44 @@
 -- =============================================
 -- COMMIT Operations Guide
 -- =============================================
+/*
+-- COMMIT Complete Guide
+-- The COMMIT statement in SQL Server finalizes a database transaction, making all data modifications permanent and releasing transaction-related locks. It represents the successful completion of a transaction and ensures data changes are durably stored in the database according to the ACID properties.
+
+Facts and Notes:
+- Marks the end of a successful transaction
+- Can be explicit (COMMIT) or implicit (auto-commit)
+- Supports both COMMIT TRANSACTION and COMMIT WORK syntax
+- Releases all transaction-related locks
+- Decrements @@TRANCOUNT by 1
+- Cannot be rolled back once executed
+- Supports delayed durability option
+- Works with both local and distributed transactions
+
+Important Considerations:
+- Only commits the innermost transaction when nested
+- Resource locks are held until final COMMIT
+- Transaction log truncation depends on successful commits
+- Delayed durability affects transaction durability guarantees
+- Large transactions impact system performance until committed
+- Implicit transactions can affect commit behavior
+- Connection termination before COMMIT causes automatic rollback
+- Proper error handling crucial before committing
+
+1. Basic COMMIT: This section demonstrates the fundamental usage of COMMIT statement to finalize a simple transaction with a single operation.
+2. COMMIT with Multiple Operations: This section shows managing multiple database operations within a single transaction, ensuring atomic execution.
+3. COMMIT WORK: This section illustrates using the ANSI SQL standard COMMIT WORK syntax for better code portability and compliance.
+4. Conditional COMMIT: This section covers implementing conditional transaction commits based on business rules and operation results.
+5. COMMIT with @@TRANCOUNT Check: This section demonstrates managing nested transactions and proper commit handling using transaction count.
+6. COMMIT with Delayed Durability: This section shows using delayed durability option for performance optimization in specific scenarios.
+7. COMMIT with TRY-CATCH: This section illustrates proper error handling and transaction management using TRY-CATCH blocks.
+8. COMMIT with Performance Monitoring: This section covers tracking and logging transaction performance metrics during commit operations.
+9. COMMIT with Explicit Transaction Mode: This section demonstrates managing explicit transaction modes and state verification before commit.
+10. COMMIT with Isolation Level: This section shows setting appropriate isolation levels for transaction consistency and concurrency control.
+
+Author: Nikhil Shrivastav
+Date: February 2025
+*/
 
 USE HRSystem;
 GO

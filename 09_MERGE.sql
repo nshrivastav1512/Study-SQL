@@ -1,6 +1,43 @@
 -- =============================================
 -- MERGE Operations Complete Guide
 -- =============================================
+/*
+-- MERGE Keyword Complete Guide
+-- The MERGE statement is a DML (Data Manipulation Language) command that combines INSERT, UPDATE, and DELETE operations in a single statement. It allows synchronizing a target table with a source dataset by performing multiple data modifications based on matching conditions. MERGE is particularly useful for data warehouse loading, slowly changing dimensions, and data synchronization scenarios.
+
+Facts and Notes:
+- Introduced in SQL Server 2008 and requires a minimum compatibility level of 100
+- Provides atomic operation for multiple DML actions
+- Supports both matched and unmatched conditions for source and target
+- Can handle multiple rows with a single statement
+- Requires HOLDLOCK hint to prevent potential race conditions
+- Maximum of three MATCHED clauses allowed (MATCHED, NOT MATCHED BY TARGET, NOT MATCHED BY SOURCE)
+- Cannot update the same row multiple times in a single MERGE statement
+- Target table cannot participate in a foreign key reference during MERGE
+
+Important Considerations:
+- Always use explicit transaction control for consistency
+- Include proper error handling to manage potential failures
+- Be cautious with large dataset merges due to lock escalation
+- Avoid updating matching columns during MERGE operation
+- Consider using HOLDLOCK hint to prevent Halloween Protection issues
+- Monitor transaction log usage during large MERGE operations
+- Ensure proper indexing on matching columns for better performance
+- Validate source data before MERGE to prevent constraint violations
+
+1. Basic MERGE Operation: This section demonstrates the fundamental MERGE statement structure combining INSERT and UPDATE operations based on matching conditions between source and target tables.
+2. MERGE with Multiple Conditions and OUTPUT: This section shows complex matching conditions with OUTPUT clause to capture the results of the merge operation, including tracking of inserted, updated, and deleted rows.
+3. MERGE with Table Variable Source: This section illustrates using table variables as source data for MERGE operations, useful for small-scale data modifications and testing scenarios.
+4. MERGE with Complex Join Source: This section demonstrates using complex joins and subqueries in the source dataset, allowing for sophisticated data matching and transformation logic.
+5. MERGE with OUTPUT into Table: This section covers capturing MERGE operation results into a table for auditing and verification purposes, including tracking all changes made during the operation.
+6. MERGE with Error Handling: This section shows implementing proper error handling and transaction management for MERGE operations, including rollback scenarios and business rule validation.
+7. MERGE with Dynamic SQL: This section illustrates constructing and executing dynamic MERGE statements safely, including proper parameter handling and SQL injection prevention.
+8. MERGE with Conditional Logic: This section demonstrates using complex conditional logic within MERGE operations, including CASE expressions and multiple criteria for matching and actions.
+9. MERGE with Partition Hint: This section covers using table hints and handling partitioned tables in MERGE operations, including performance optimization techniques.
+
+Author: Nikhil Shrivastav
+Date: February 2025
+*/
 
 USE HRSystem;
 GO

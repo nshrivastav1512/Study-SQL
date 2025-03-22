@@ -1,3 +1,30 @@
+/*
+    FILEPATH: /c:/AI Use and Deveopment/Study SQL/02_ALTER.sql
+
+    =============================================
+    ALTER Keyword Complete Guide
+    =============================================
+
+    This SQL script provides a complete guide on using the ALTER keyword in SQL. It demonstrates various use cases of the ALTER keyword for altering databases, schemas, tables, indexes, views, stored procedures, functions, triggers, and database security.
+
+    The script includes the following sections:
+
+    1. Altering Database: Demonstrates how to modify the name of a database.
+    2. Altering Schema: Shows how to create a new schema and transfer ownership of a schema.
+    3. Altering Tables: Covers adding columns, modifying columns, adding constraints, dropping constraints, adding check constraints, and enabling/disabling constraints.
+    4. Altering Indexes: Illustrates disabling, rebuilding, and reorganizing indexes.
+    5. Altering Views: Demonstrates altering a view by modifying the underlying SELECT statement.
+    6. Altering Stored Procedures: Shows how to alter a stored procedure by updating the salary of an employee.
+    7. Altering Functions: Covers altering a function to calculate the years of service for an employee.
+    8. Altering Triggers: Demonstrates dropping an existing trigger and creating a new trigger to audit employee changes.
+    9. Altering Table Structure for New Business Requirements: Shows how to add a new table for performance reviews and alter it to add a foreign key constraint.
+    10. Altering Database Security: Illustrates creating a new user, adding the user to a role, granting specific permissions, and altering permissions.
+
+    This script serves as a comprehensive reference for using the ALTER keyword in SQL and can be used as a guide for making alterations to databases, schemas, tables, indexes, views, stored procedures, functions, triggers, and database security.
+
+    Author: [Your Name]
+    Date: [Current Date]
+*/
 -- =============================================
 -- ALTER Keyword Complete Guide
 -- =============================================

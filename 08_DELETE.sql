@@ -1,7 +1,28 @@
 -- =============================================
 -- DELETE Operations Complete Guide
 -- =============================================
+/*
+-- DELETE Keyword Complete Guide
+-- The DELETE statement is a DML (Data Manipulation Language) command used to remove rows from a database table. It allows for single-table deletions, multi-table deletions through JOINs, and removing data based on subqueries. The DELETE statement can remove specific rows based on WHERE conditions or all rows when no WHERE clause is specified, with options for transaction control and output capture.
 
+1. Basic DELETE Operations: This section demonstrates fundamental DELETE operations including simple deletions and using subqueries in WHERE clause to filter rows for deletion based on specific conditions.
+2. DELETE with JOIN: This section illustrates deleting data using JOIN operations, showing how to remove records based on conditions from multiple related tables while maintaining referential integrity.
+3. DELETE with OUTPUT: This section demonstrates capturing deleted data using the OUTPUT clause, allowing for audit trailing and data archival before removal.
+4. DELETE with OUTPUT into Table: This section covers storing deleted data into temporary tables or table variables for further processing or maintaining deletion history.
+5. DELETE with TOP: This section explains using the TOP clause to limit the number of rows affected by a DELETE operation, useful for batch processing and controlled deletions.
+6. DELETE with Transaction and Error Handling: This section covers implementing proper transaction management and error handling for DELETE operations, including rollback scenarios and business rule validation.
+7. DELETE with Dynamic SQL: This section shows how to construct and execute dynamic DELETE statements safely, including proper parameter handling and SQL injection prevention.
+8. DELETE with Table Lock Hint: This section explains using table hints for controlling locking behavior during DELETE operations, including performance implications.
+9. DELETE with Partitioned Table: This section demonstrates deleting data from partitioned tables, including partition-aware deletions and optimizing performance.
+10. DELETE with EXISTS: This section shows how to use EXISTS clause in DELETE statements to remove data based on the existence of related records.
+11. DELETE with Multiple Joins: This section covers complex DELETE operations involving multiple table joins, showing how to delete based on conditions from multiple related tables.
+12. DELETE with CASE and Subquery: This section demonstrates using CASE expressions and subqueries in DELETE operations for conditional data removal.
+13. Batch DELETE: This section explains implementing batch deletion strategies to manage large-scale deletions while controlling transaction log growth and system resources.
+14. DELETE with Cross-Database Reference: This section covers deleting data based on references from different databases, including permissions and cross-database integrity considerations.
+
+Author: Nikhil Shrivastav
+Date: February 2025
+*/
 USE HRSystem;
 GO
 

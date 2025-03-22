@@ -1,6 +1,44 @@
 -- =============================================
 -- SAVEPOINT Operations Guide
 -- =============================================
+ /*
+-- SAVEPOINT Complete Guide
+-- SAVEPOINT in SQL Server creates intermediate points within a transaction that enable partial rollback capabilities. It provides granular control over transaction management by allowing specific portions of a transaction to be rolled back while maintaining the integrity of other operations.
+
+Facts and Notes:
+- Creates named restoration points within transactions
+- Supports multiple savepoints in a single transaction
+- Persists until transaction ends or explicit rollback
+- Does not affect transaction nesting level
+- Compatible with distributed transactions
+- No limit on number of savepoints
+- Savepoints are local to current transaction
+- Memory usage increases with savepoint count
+
+Important Considerations:
+- Rolling back to a savepoint keeps the transaction active
+- Savepoints are released after transaction completion
+- Cannot access savepoints from other transactions
+- Savepoint names must be unique within transaction
+- Resource locks maintained after savepoint rollback
+- Nested transactions can affect savepoint behavior
+- Performance impact with excessive savepoints
+- Transaction log records all savepoint operations
+
+1. Basic SAVEPOINT: This section demonstrates fundamental usage of savepoints for basic transaction control and partial rollback capabilities.
+2. Multiple SAVEPOINTS: This section shows managing multiple savepoints within a single transaction for different operation stages.
+3. Nested SAVEPOINTS: This section covers implementing savepoints within nested transaction scenarios and proper management.
+4. SAVEPOINT with Conditional Logic: This section illustrates using savepoints with business logic conditions for selective rollbacks.
+5. SAVEPOINT with Error Recovery: This section demonstrates comprehensive error handling strategies using savepoints and transaction state management.
+6. SAVEPOINT with Batch Processing: This section shows implementing savepoints in batch operations for granular error handling and recovery.
+7. SAVEPOINT with Data Validation: This section covers using savepoints for data validation scenarios and maintaining data integrity.
+8. SAVEPOINT with Multiple Recovery Points: This section illustrates managing multiple recovery points for complex transaction scenarios.
+9. SAVEPOINT with Dynamic SQL: This section demonstrates using savepoints with dynamic SQL operations and proper error handling.
+10. SAVEPOINT with Hierarchical Updates: This section shows managing parent-child relationship updates using savepoints for consistency.
+
+Author: Nikhil Shrivastav
+Date: February 2025
+*/
 
 USE HRSystem;
 GO
