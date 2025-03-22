@@ -26,7 +26,7 @@ The `CREATE` statement is used to create databases, schemas, tables, indexes, vi
 - **Schema**: [01_CREATE.sql](file:///c:/AI%20Use%20and%20Deveopment/Study%20SQL/01_CREATE.sql) line 11
 - **Table**: [01_CREATE.sql](file:///c:/AI%20Use%20and%20Deveopment/Study%20SQL/01_CREATE.sql) line 19
 - **Stored Procedure**: [01_CREATE.sql](file:///c:/AI%20Use%20and%20Deveopment/Study%20SQL/01_CREATE.sql) line 99
-- ** tesing the MD file : [click](https://github.com/nshrivastav1512/Study-SQL/blob/83fe965296a4ce2685d53e26e2b3a3344f8e3517/text.md) line 1
+- ** tesing the MD file : [click](text.md) line 1
 
 #### Alter
 
