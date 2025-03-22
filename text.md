@@ -22,11 +22,10 @@ Welcome to the Study SQL guide. This document provides a detailed explanation of
 
 The `CREATE` statement is used to create databases, schemas, tables, indexes, views, stored procedures, triggers, and functions. For example, you can create a stored procedure as shown in [01_CREATE.sql](file:///c:/AI%20Use%20and%20Deveopment/Study%20SQL/01_CREATE.sql) line 99.
 
-- **Database**: [01_CREATE.sql](file:///c:/AI%20Use%20and%20Deveopment/Study%20SQL/01_CREATE.sql) line 5
-- **Schema**: [01_CREATE.sql](file:///c:/AI%20Use%20and%20Deveopment/Study%20SQL/01_CREATE.sql) line 11
-- **Table**: [01_CREATE.sql](file:///c:/AI%20Use%20and%20Deveopment/Study%20SQL/01_CREATE.sql) line 19
-- **Stored Procedure**: [01_CREATE.sql](file:///c:/AI%20Use%20and%20Deveopment/Study%20SQL/01_CREATE.sql) line 99
-- ** tesing the MD file : [click](text.md) line 1
+- **Database**: [01_CREATE.sql](01_CREATE.sql#l5) line 5
+- **Schema**: [01_CREATE.sql](01_CREATE.sql#L11) line 11
+- **Table**: [01_CREATE.sql](01_CREATE.sql#l19) line 19
+- **Stored Procedure**: [01_CREATE.sql](01_CREATE.sql#l99) line 99
 
 #### Alter
 
