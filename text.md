@@ -25,7 +25,7 @@ The `CREATE` statement is used to create databases, schemas, tables, indexes, vi
 - **Database**: [01_CREATE.sql](01_CREATE.sql#l5) line 5
 - **Schema**: [01_CREATE.sql](01_CREATE.sql#L11) line 11
 - **Table**: [01_CREATE.sql](01_CREATE.sql#l19) line 19
-- **Stored Procedure**: [01_CREATE.sql](01_CREATE.sql#l99) line 99
+- **Stored Procedure**: [01_CREATE.sql](01_CREATE.sql?plain=1#L99) line 99
 
 #### Alter
 
