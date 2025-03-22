@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Employees>
+    <Employee>
+        <FirstName>John</FirstName>
+        <LastName>Doe</LastName>
+        <Email>john.doe@company.com</Email>
+        <Department>IT</Department>
+        <Salary>75000.00</Salary>
+    </Employee>
+    <Employee>
+        <FirstName>Jane</FirstName>
+        <LastName>Smith</LastName>
+        <Email>jane.smith@company.com</Email>
+        <Department>HR</Department>
+        <Salary>65000.00</Salary>
+    </Employee>
+    <Employee>
+        <FirstName>Michael</FirstName>
+        <LastName>Johnson</LastName>
+        <Email>michael.johnson@company.com</Email>
+        <Department>Finance</Department>
+        <Salary>80000.00</Salary>
+    </Employee>
+    <Employee>
+        <FirstName>Sarah</FirstName>
+        <LastName>Williams</LastName>
+        <Email>sarah.williams@company.com</Email>
+        <Department>Marketing</Department>
+        <Salary>70000.00</Salary>
+    </Employee>
+    <Employee>
+        <FirstName>Robert</FirstName>
+        <LastName>Brown</LastName>
+        <Email>robert.brown@company.com</Email>
+        <Department>Operations</Department>
+        <Salary>72000.00</Salary>
+    </Employee>
+</Employees>

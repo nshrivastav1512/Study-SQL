@@ -1,0 +1,6 @@
+FirstName,LastName,Email,Department,Salary
+John,Doe,john.doe@company.com,IT,50000.00
+Jane,Smith,invalid_email,HR,not_a_number
+Mike,Brown,mike.brown@company.com,Sales,48000.00
+Sarah,,sarah.w@company.com,Marketing,-1000
+Robert,Johnson,rob.j@company.com,Finance,too_high

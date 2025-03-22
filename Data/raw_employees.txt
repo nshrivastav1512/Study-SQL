@@ -1,0 +1,4 @@
+John.Doe.john.doe@company.com.IT
+Jane.Smith.jane.smith@company.com.HR
+Mike.Brown.mike.brown@company.com.Sales
+Sarah.Wilson.sarah.w@company.com.Marketing

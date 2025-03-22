@@ -1,0 +1,4 @@
+FirstName,LastName,Email,Department,Salary
+John,Doe,john.doe@hr.com,IT,75000.00
+Jane,Smith,jane.smith@hr.com,HR,65000.00
+Bob,Johnson,bob.johnson@hr.com,Finance,80000.00
