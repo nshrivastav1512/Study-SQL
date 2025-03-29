@@ -19,6 +19,46 @@ ORDER BY SortOrder, Salary ASC; -- Sort by key, then salary
 
 *   **Explanation:** Achieves a custom sort order. Here, employees with a salary of exactly $50,000 are listed first (because their `SortOrder` is 0), and all others are listed afterward, sorted by their salary (`SortOrder` = 1, then `Salary ASC`). Using `CASE` (or other functions) in the `ORDER BY` clause allows for flexible, non-standard sorting logic.
 
+<details>
+<summary>Click to see Example Visualization (Complex Sorting)</summary>
+
+*   **Input Table (`HR.EMP_Details` - Conceptual Snippet):**
+    ```
+    +------------+--------+
+    | EmployeeID | Salary |
+    +------------+--------+
+    | 1000       | 60000  |
+    | 1001       | 50000  | <- Special Salary
+    | 1002       | 90000  |
+    | 1003       | 55000  |
+    | 1004       | 50000  | <- Special Salary
+    | 1005       | 48000  |
+    +------------+--------+
+    ```
+*   **Example Query:**
+    ```sql
+    SELECT EmployeeID, Salary,
+        CASE WHEN Salary = 50000 THEN 0 ELSE 1 END AS SortOrder
+    FROM HR.EMP_Details
+    ORDER BY SortOrder ASC, Salary ASC; -- Sort by key (0 first), then salary
+    ```
+*   **Output Result Set:** Rows with Salary=50000 appear first (SortOrder=0), sorted by Salary (though they are equal here). Then other rows appear (SortOrder=1), sorted by Salary ascending.
+    ```
+    +------------+--------+-----------+
+    | EmployeeID | Salary | SortOrder |
+    +------------+--------+-----------+
+    | 1001       | 50000  | 0         | <- Group 0
+    | 1004       | 50000  | 0         | <- Group 0
+    | 1005       | 48000  | 1         | <- Group 1, lowest salary
+    | 1003       | 55000  | 1         | <- Group 1
+    | 1000       | 60000  | 1         | <- Group 1
+    | 1002       | 90000  | 1         | <- Group 1, highest salary
+    +------------+--------+-----------+
+    ```
+*   **Key Takeaway:** `CASE` within `ORDER BY` allows you to define custom sorting priorities beyond simple ascending/descending order of column values.
+
+</details>
+
 **b) Dynamic `TOP` with Variables**
 
 ```sql
@@ -27,6 +67,43 @@ SELECT TOP (@TopCount) * FROM HR.EMP_Details ORDER BY Salary DESC;
 ```
 
 *   **Explanation:** Allows the number of rows returned by `TOP` to be determined by a variable (`@TopCount`). This makes queries more flexible for reporting or application use where the desired number of results might change.
+
+<details>
+<summary>Click to see Example Visualization (Dynamic TOP)</summary>
+
+*   **Input Table (`HR.EMP_Details` - Conceptual Snippet, ordered by Salary DESC):**
+    ```
+    +------------+--------+
+    | EmployeeID | Salary |
+    +------------+--------+
+    | 1002       | 90000  |
+    | 1001       | 75000  |
+    | 1004       | 62000  |
+    | 1000       | 60000  |
+    | 1003       | 55000  |
+    | 1005       | 48000  |
+    +------------+--------+
+    ```
+*   **Example Query:**
+    ```sql
+    DECLARE @TopCount INT = 3; -- Set the variable
+    SELECT TOP (@TopCount) EmployeeID, Salary
+    FROM HR.EMP_Details
+    ORDER BY Salary DESC;
+    ```
+*   **Output Result Set:** Returns the top 3 rows as specified by the `@TopCount` variable.
+    ```
+    +------------+--------+
+    | EmployeeID | Salary |
+    +------------+--------+
+    | 1002       | 90000  |
+    | 1001       | 75000  |
+    | 1004       | 62000  |
+    +------------+--------+
+    ```
+*   **Key Takeaway:** Using a variable with `TOP` makes the number of rows retrieved dynamic, controllable from outside the main `SELECT` statement.
+
+</details>
 
 **c) Conditional Aggregation (using `CASE` within Aggregate Functions)**
 
@@ -43,6 +120,48 @@ GROUP BY DepartmentID;
 
 *   **Explanation:** Performs aggregation (`SUM`, `COUNT`, `AVG`, etc.) conditionally. The `CASE` expression inside the aggregate function determines whether a row contributes to the calculation (e.g., adds 1 to the `SUM` if the salary is low, 0 otherwise). This allows creating pivot-like summaries within a standard `GROUP BY` query.
 
+<details>
+<summary>Click to see Example Visualization (Conditional Aggregation)</summary>
+
+*   **Input Table (`HR.EMP_Details` - Conceptual Snippet):**
+    ```
+    +------------+--------------+--------+
+    | EmployeeID | DepartmentID | Salary |
+    +------------+--------------+--------+
+    | 1000       | 2            | 60000  | <- Mid
+    | 1001       | 2            | 75000  | <- Mid
+    | 1002       | 3            | 90000  | <- High
+    | 1003       | 2            | 55000  | <- Mid
+    | 1004       | 1            | 62000  | <- Mid
+    | 1005       | 1            | 48000  | <- Low
+    | 1006       | 3            | 85000  | <- High
+    +------------+--------------+--------+
+    ```
+*   **Example Query:**
+    ```sql
+    SELECT
+        DepartmentID,
+        COUNT(*) AS TotalEmployees,
+        SUM(CASE WHEN Salary < 50000 THEN 1 ELSE 0 END) AS LowSalaryCount,
+        SUM(CASE WHEN Salary BETWEEN 50000 AND 80000 THEN 1 ELSE 0 END) AS MidSalaryCount,
+        SUM(CASE WHEN Salary > 80000 THEN 1 ELSE 0 END) AS HighSalaryCount
+    FROM HR.EMP_Details
+    GROUP BY DepartmentID;
+    ```
+*   **Output Result Set:** Shows total employees per department and counts within different salary bands.
+    ```
+    +--------------+----------------+----------------+----------------+-----------------+
+    | DepartmentID | TotalEmployees | LowSalaryCount | MidSalaryCount | HighSalaryCount |
+    +--------------+----------------+----------------+----------------+-----------------+
+    | 1            | 2              | 1              | 1              | 0               |
+    | 2            | 3              | 0              | 3              | 0               |
+    | 3            | 2              | 0              | 0              | 2               |
+    +--------------+----------------+----------------+----------------+-----------------+
+    ```
+*   **Key Takeaway:** `CASE` inside aggregate functions allows you to count or sum based on conditions, effectively pivoting data within a `GROUP BY`.
+
+</details>
+
 **d) Window Functions with Partitioning (`OVER(PARTITION BY ...)`**
 
 ```sql
@@ -57,6 +176,46 @@ FROM HR.EMP_Details;
     *   `OVER(PARTITION BY DepartmentID)`: Defines the window. Here, the window for each employee row consists of all employees in the *same department*.
     *   `AVG(Salary) OVER(...)`: Calculates the average salary within that window (the employee's department).
     *   The result is that each employee row now also shows the average, max, min salary *for their specific department*.
+
+<details>
+<summary>Click to see Example Visualization (Window Functions - Partitioning)</summary>
+
+*   **Input Table (`HR.EMP_Details` - Conceptual Snippet):**
+    ```
+    +------------+--------------+--------+
+    | EmployeeID | DepartmentID | Salary |
+    +------------+--------------+--------+
+    | 1000       | 2            | 60000  |
+    | 1001       | 2            | 75000  |
+    | 1002       | 3            | 90000  |
+    | 1003       | 2            | 55000  |
+    | 1004       | 1            | 62000  |
+    | 1005       | 1            | 48000  |
+    +------------+--------------+--------+
+    ```
+*   **Conceptual Averages:** Dept 1 Avg = 55000, Dept 2 Avg = 63333.33, Dept 3 Avg = 90000
+*   **Example Query:**
+    ```sql
+    SELECT EmployeeID, DepartmentID, Salary,
+        AVG(Salary) OVER(PARTITION BY DepartmentID) AS AvgDeptSalary
+    FROM HR.EMP_Details;
+    ```
+*   **Output Result Set:** Each row shows the employee's salary and the average salary *for their department*.
+    ```
+    +------------+--------------+--------+---------------+
+    | EmployeeID | DepartmentID | Salary | AvgDeptSalary |
+    +------------+--------------+--------+---------------+
+    | 1004       | 1            | 62000  | 55000.00      |
+    | 1005       | 1            | 48000  | 55000.00      |
+    | 1000       | 2            | 60000  | 63333.33      |
+    | 1001       | 2            | 75000  | 63333.33      |
+    | 1003       | 2            | 55000  | 63333.33      |
+    | 1002       | 3            | 90000  | 90000.00      |
+    +------------+--------------+--------+---------------+
+    ```
+*   **Key Takeaway:** Window functions with `PARTITION BY` let you perform calculations (like AVG, SUM, MAX) across related rows (the partition) and display that result alongside each detail row, without collapsing the rows.
+
+</details>
 
 **e) Row Numbering and Ranking Functions (`OVER(PARTITION BY ... ORDER BY ...)`**
 
@@ -77,6 +236,50 @@ FROM HR.EMP_Details;
     *   `DENSE_RANK()`: Similar to `RANK`, but does not skip ranks after ties (e.g., if two rows are rank 1, the next is rank 2).
     *   `NTILE(N)`: Divides the rows within each partition into `N` roughly equal groups (buckets) based on the order and assigns a group number (1 to N).
 
+<details>
+<summary>Click to see Example Visualization (Ranking Functions)</summary>
+
+*   **Input Table (`HR.EMP_Details` - Conceptual Snippet with Ties):**
+    ```
+    +------------+--------------+--------+
+    | EmployeeID | DepartmentID | Salary |
+    +------------+--------------+--------+
+    | 1000       | 2            | 60000  |
+    | 1001       | 2            | 75000  | <- Highest in Dept 2
+    | 1002       | 3            | 90000  | <- Highest in Dept 3
+    | 1003       | 2            | 55000  |
+    | 1004       | 1            | 62000  | <- Highest in Dept 1 (Tie)
+    | 1005       | 1            | 62000  | <- Highest in Dept 1 (Tie)
+    | 1006       | 1            | 48000  |
+    +------------+--------------+--------+
+    ```
+*   **Example Query:**
+    ```sql
+    SELECT EmployeeID, DepartmentID, Salary,
+        ROW_NUMBER() OVER(PARTITION BY DepartmentID ORDER BY Salary DESC) AS RowNum,
+        RANK()       OVER(PARTITION BY DepartmentID ORDER BY Salary DESC) AS SalaryRank,
+        DENSE_RANK() OVER(PARTITION BY DepartmentID ORDER BY Salary DESC) AS DenseRank,
+        NTILE(2)     OVER(PARTITION BY DepartmentID ORDER BY Salary DESC) AS SalaryGroup -- Split into 2 groups
+    FROM HR.EMP_Details;
+    ```
+*   **Output Result Set:** Shows different ranking types within each department.
+    ```
+    +------------+--------------+--------+--------+------------+-----------+-------------+
+    | EmployeeID | DepartmentID | Salary | RowNum | SalaryRank | DenseRank | SalaryGroup |
+    +------------+--------------+--------+--------+------------+-----------+-------------+
+    | 1004       | 1            | 62000  | 1      | 1          | 1         | 1           | <- Dept 1
+    | 1005       | 1            | 62000  | 2      | 1          | 1         | 1           |
+    | 1006       | 1            | 48000  | 3      | 3          | 2         | 2           |
+    | 1001       | 2            | 75000  | 1      | 1          | 1         | 1           | <- Dept 2
+    | 1000       | 2            | 60000  | 2      | 2          | 2         | 1           |
+    | 1003       | 2            | 55000  | 3      | 3          | 3         | 2           |
+    | 1002       | 3            | 90000  | 1      | 1          | 1         | 1           | <- Dept 3
+    +------------+--------------+--------+--------+------------+-----------+-------------+
+    ```
+*   **Key Takeaway:** Ranking functions assign ranks or row numbers based on ordering within partitions, handling ties differently (`RANK` skips, `DENSE_RANK` doesn't). `NTILE` divides rows into groups.
+
+</details>
+
 **f) Running Totals and Moving Averages (`OVER(ORDER BY ... ROWS BETWEEN ...)`**
 
 ```sql
@@ -89,6 +292,46 @@ FROM HR.EMP_Details;
 *   **Explanation:** More window function examples.
     *   `OVER(ORDER BY HireDate)`: Defines a window based on ordering. For `SUM`, without `ROWS BETWEEN`, it defaults to all rows from the beginning of the partition up to the current row (running total).
     *   `ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING`: Explicitly defines the window frame relative to the current row (the row before, the current row, the row after, based on `HireDate` order) for the `AVG` calculation (moving average).
+
+<details>
+<summary>Click to see Example Visualization (Running Totals/Moving Averages)</summary>
+
+*   **Input Table (`HR.EMP_Details` - Conceptual Snippet, ordered by HireDate):**
+    ```
+    +------------+------------+--------+
+    | EmployeeID | HireDate   | Salary |
+    +------------+------------+--------+
+    | 1002       | 2020-05-20 | 90000  |
+    | 1001       | 2021-03-10 | 75000  |
+    | 1000       | 2022-01-15 | 60000  |
+    | 1004       | 2022-11-30 | 62000  |
+    | 1005       | 2023-02-20 | 48000  |
+    | 1003       | 2023-07-01 | 55000  |
+    +------------+------------+--------+
+    ```
+*   **Example Query:**
+    ```sql
+    SELECT EmployeeID, HireDate, Salary,
+        SUM(Salary) OVER(ORDER BY HireDate) AS RunningTotalSalary,
+        AVG(Salary) OVER(ORDER BY HireDate ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) AS MovingAvgSalary
+    FROM HR.EMP_Details;
+    ```
+*   **Output Result Set:** Shows running total and 3-row moving average based on HireDate order.
+    ```
+    +------------+------------+--------+--------------------+-----------------+
+    | EmployeeID | HireDate   | Salary | RunningTotalSalary | MovingAvgSalary |
+    +------------+------------+--------+--------------------+-----------------+
+    | 1002       | 2020-05-20 | 90000  | 90000              | 82500.00        | -- Avg(90k, 75k)
+    | 1001       | 2021-03-10 | 75000  | 165000             | 75000.00        | -- Avg(90k, 75k, 60k)
+    | 1000       | 2022-01-15 | 60000  | 225000             | 65666.66        | -- Avg(75k, 60k, 62k)
+    | 1004       | 2022-11-30 | 62000  | 287000             | 56666.66        | -- Avg(60k, 62k, 48k)
+    | 1005       | 2023-02-20 | 48000  | 335000             | 55000.00        | -- Avg(62k, 48k, 55k)
+    | 1003       | 2023-07-01 | 55000  | 390000             | 51500.00        | -- Avg(48k, 55k)
+    +------------+------------+--------+--------------------+-----------------+
+    ```
+*   **Key Takeaway:** Window functions can calculate running totals (`SUM OVER(ORDER BY...)`) or moving calculations (`AVG OVER(ORDER BY... ROWS BETWEEN...)`) across ordered data.
+
+</details>
 
 **g) Finding Nth Highest Value (using CTE and Ranking)**
 
@@ -106,6 +349,54 @@ WHERE SalaryRank = 3;
 *   **Explanation:** A common pattern using ranking functions within a Common Table Expression (CTE).
     1.  The `RankedSalaries` CTE calculates the dense rank of salaries within each department.
     2.  The outer query selects from the CTE, filtering for rows where the rank is 3, effectively finding the 3rd highest distinct salary in each department.
+
+<details>
+<summary>Click to see Example Visualization (Finding Nth Value)</summary>
+
+*   **Input Table (`HR.EMP_Details` - Conceptual Snippet):**
+    ```
+    +------------+--------------+--------+
+    | EmployeeID | DepartmentID | Salary |
+    +------------+--------------+--------+
+    | 1000       | 2            | 60000  | <- Rank 2 in Dept 2
+    | 1001       | 2            | 75000  | <- Rank 1 in Dept 2
+    | 1002       | 3            | 90000  | <- Rank 1 in Dept 3
+    | 1003       | 2            | 55000  | <- Rank 3 in Dept 2 (Match)
+    | 1004       | 1            | 62000  | <- Rank 1 in Dept 1
+    | 1005       | 1            | 62000  | <- Rank 1 in Dept 1
+    | 1006       | 1            | 48000  | <- Rank 2 in Dept 1
+    | 1007       | 3            | 85000  | <- Rank 2 in Dept 3
+    | 1008       | 3            | 80000  | <- Rank 3 in Dept 3 (Match)
+    +------------+--------------+--------+
+    ```
+*   **CTE Result (Conceptual - `RankedSalaries`):**
+    ```
+    +--------------+--------+------------+
+    | DepartmentID | Salary | SalaryRank |
+    +--------------+--------+------------+
+    | 1            | 62000  | 1          |
+    | 1            | 62000  | 1          |
+    | 1            | 48000  | 2          |
+    | 2            | 75000  | 1          |
+    | 2            | 60000  | 2          |
+    | 2            | 55000  | 3          | <- Match Rank
+    | 3            | 90000  | 1          |
+    | 3            | 85000  | 2          |
+    | 3            | 80000  | 3          | <- Match Rank
+    +--------------+--------+------------+
+    ```
+*   **Final Output Result Set:** Selects rows from CTE where `SalaryRank = 3`.
+    ```
+    +--------------+--------------------+
+    | DepartmentID | ThirdHighestSalary |
+    +--------------+--------------------+
+    | 2            | 55000              |
+    | 3            | 80000              |
+    +--------------+--------------------+
+    ```
+*   **Key Takeaway:** Combining CTEs with ranking functions is a standard pattern for finding the Nth highest/lowest value within groups.
+
+</details>
 
 **h) `PIVOT` Operator**
 
@@ -125,6 +416,50 @@ PIVOT (
     *   `IN ([1], [2], ...)`: The specific values from the `FOR` column that you want to turn into columns.
     *   The result shows `JobTitle` on rows and Departments (1, 2, 3, 4) as columns, with the sum of salaries at the intersections.
 
+<details>
+<summary>Click to see Example Visualization (PIVOT)</summary>
+
+*   **Input Data (Conceptual - `SourceData` from subquery):** (Assuming JobTitle added)
+    ```
+    +------------+--------------+--------+
+    | JobTitle   | DepartmentID | Salary |
+    +------------+--------------+--------+
+    | Analyst    | 2            | 60000  |
+    | Sr Analyst | 2            | 75000  |
+    | Manager    | 3            | 90000  |
+    | Analyst    | 2            | 55000  |
+    | Developer  | 1            | 62000  |
+    | Jr Dev     | 1            | 48000  |
+    | Director   | 3            | 85000  |
+    +------------+--------------+--------+
+    ```
+*   **Example Query:**
+    ```sql
+    SELECT JobTitle, [1] AS Dept1_Salary, [2] AS Dept2_Salary, [3] AS Dept3_Salary
+    FROM (SELECT JobTitle, DepartmentID, Salary FROM HR.EMP_Details) AS SourceData
+    PIVOT (
+        SUM(Salary)
+        FOR DepartmentID
+        IN ([1], [2], [3])
+    ) AS PivotTable;
+    ```
+*   **Output Result Set:** DepartmentIDs become columns, showing SUM of Salary for each JobTitle in that Dept.
+    ```
+    +------------+--------------+--------------+--------------+
+    | JobTitle   | Dept1_Salary | Dept2_Salary | Dept3_Salary |
+    +------------+--------------+--------------+--------------+
+    | Analyst    | NULL         | 115000       | NULL         | -- Sum(60k, 55k)
+    | Developer  | 62000        | NULL         | NULL         |
+    | Director   | NULL         | NULL         | 85000        |
+    | Jr Dev     | 48000        | NULL         | NULL         |
+    | Manager    | NULL         | NULL         | 90000        |
+    | Sr Analyst | NULL         | 75000        | NULL         |
+    +------------+--------------+--------------+--------------+
+    ```
+*   **Key Takeaway:** `PIVOT` rotates rows into columns, aggregating data at the intersection points based on the specified aggregate function and pivot column values.
+
+</details>
+
 **i) `UNPIVOT` Operator**
 
 ```sql
@@ -138,6 +473,49 @@ UNPIVOT (
 ```
 
 *   **Explanation:** Performs the reverse operation of `PIVOT`, transforming data from a columnar format back into a row-oriented format. It takes values spread across multiple columns (`HR_Dept`, `IT_Dept`, etc.) and turns them into distinct rows.
+
+<details>
+<summary>Click to see Example Visualization (UNPIVOT)</summary>
+
+*   **Input Table (Conceptual - `SourceTable` with pivoted data):**
+    ```
+    +------------+--------------+--------------+--------------+
+    | JobTitle   | Dept1_Salary | Dept2_Salary | Dept3_Salary |
+    +------------+--------------+--------------+--------------+
+    | Analyst    | NULL         | 115000       | NULL         |
+    | Developer  | 62000        | NULL         | NULL         |
+    | Director   | NULL         | NULL         | 85000        |
+    | Jr Dev     | 48000        | NULL         | NULL         |
+    | Manager    | NULL         | NULL         | 90000        |
+    | Sr Analyst | NULL         | 75000        | NULL         |
+    +------------+--------------+--------------+--------------+
+    ```
+*   **Example Query:**
+    ```sql
+    SELECT JobTitle, DepartmentName, Salary
+    FROM (SELECT JobTitle, Dept1_Salary, Dept2_Salary, Dept3_Salary FROM SourceTable) AS SourceData
+    UNPIVOT (
+        Salary -- Column to hold the values (e.g., 115000, 62000)
+        FOR DepartmentName -- Column to hold the names of the source columns (e.g., 'Dept1_Salary')
+        IN (Dept1_Salary, Dept2_Salary, Dept3_Salary)
+    ) AS UnpivotTable;
+    ```
+*   **Output Result Set:** Each non-NULL salary value from the input columns becomes a separate row.
+    ```
+    +------------+----------------+--------+
+    | JobTitle   | DepartmentName | Salary |
+    +------------+----------------+--------+
+    | Analyst    | Dept2_Salary   | 115000 |
+    | Developer  | Dept1_Salary   | 62000  |
+    | Director   | Dept3_Salary   | 85000  |
+    | Jr Dev     | Dept1_Salary   | 48000  |
+    | Manager    | Dept3_Salary   | 90000  |
+    | Sr Analyst | Dept2_Salary   | 75000  |
+    +------------+----------------+--------+
+    ```
+*   **Key Takeaway:** `UNPIVOT` rotates specified columns back into rows, creating separate rows for each column value, useful for normalizing data that has been pivoted. NULL values in the source columns are typically ignored.
+
+</details>
 
 **j) Recursive Common Table Expressions (CTEs)**
 
@@ -163,6 +541,54 @@ FROM EmployeeHierarchy ORDER BY Level;
     *   **`UNION ALL`:** Connects the anchor and recursive members.
     *   **Recursive Member:** A `SELECT` statement that references the CTE itself (`EmployeeHierarchy h`) to find the next level of the hierarchy (e.g., employees whose `ManagerID` matches an `EmployeeID` already found in the CTE).
     *   The recursion continues until the recursive member returns no more rows.
+
+<details>
+<summary>Click to see Example Visualization (Recursive CTE)</summary>
+
+*   **Input Table (`HR.EMP_Details` - Conceptual Snippet):**
+    ```
+    +------------+-----------+-----------+
+    | EmployeeID | FirstName | ManagerID |
+    +------------+-----------+-----------+
+    | 1002       | Charlie   | NULL      | <- Anchor (Level 0)
+    | 1000       | Alice     | 1002      | <- Reports to 1002 (Level 1)
+    | 1001       | Bob       | 1002      | <- Reports to 1002 (Level 1)
+    | 1004       | Ethan     | 1000      | <- Reports to 1000 (Level 2)
+    | 1005       | Fiona     | 1000      | <- Reports to 1000 (Level 2)
+    | 1003       | Diana     | 1001      | <- Reports to 1001 (Level 2)
+    +------------+-----------+-----------+
+    ```
+*   **Example Query:**
+    ```sql
+    WITH EmployeeHierarchy AS (
+        -- Anchor Member
+        SELECT EmployeeID, FirstName, ManagerID, 0 AS Level
+        FROM HR.EMP_Details WHERE ManagerID IS NULL
+        UNION ALL
+        -- Recursive Member
+        SELECT e.EmployeeID, e.FirstName, e.ManagerID, h.Level + 1
+        FROM HR.EMP_Details e
+        INNER JOIN EmployeeHierarchy h ON e.ManagerID = h.EmployeeID
+    )
+    SELECT EmployeeID, FirstName, ManagerID, Level
+    FROM EmployeeHierarchy ORDER BY Level, EmployeeID;
+    ```
+*   **Output Result Set:** Shows each employee and their level in the hierarchy.
+    ```
+    +------------+-----------+-----------+-------+
+    | EmployeeID | FirstName | ManagerID | Level |
+    +------------+-----------+-----------+-------+
+    | 1002       | Charlie   | NULL      | 0     | <- Anchor
+    | 1000       | Alice     | 1002      | 1     | <- Recursive Step 1
+    | 1001       | Bob       | 1002      | 1     | <- Recursive Step 1
+    | 1003       | Diana     | 1001      | 2     | <- Recursive Step 2
+    | 1004       | Ethan     | 1000      | 2     | <- Recursive Step 2
+    | 1005       | Fiona     | 1000      | 2     | <- Recursive Step 2
+    +------------+-----------+-----------+-------+
+    ```
+*   **Key Takeaway:** Recursive CTEs provide a powerful way to traverse hierarchical or graph-like structures by defining a starting point (anchor) and a rule for finding related records (recursive member).
+
+</details>
 
 ## 3. Targeted Interview Questions (Based on `28_select_advanced.sql`)
 

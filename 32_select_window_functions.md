@@ -34,6 +34,42 @@ FROM HR.EMP_Details;
 
 *   **Explanation:** When `OVER()` is empty, the window is the entire result set. `AVG(Salary) OVER()` calculates the average salary across all employees and displays that same average value on every employee row, alongside their individual salary.
 
+<details>
+<summary>Click to see Example Visualization (Basic Window Aggregates)</summary>
+
+*   **Input Table (`HR.EMP_Details` - Conceptual Snippet):**
+    ```
+    +------------+--------+
+    | EmployeeID | Salary |
+    +------------+--------+
+    | 1000       | 60000  |
+    | 1001       | 75000  |
+    | 1002       | 90000  |
+    | 1003       | 55000  |
+    +------------+--------+
+    ```
+*   **Conceptual Calculation:** Overall Average Salary = (60k+75k+90k+55k)/4 = 70000
+*   **Example Query:**
+    ```sql
+    SELECT EmployeeID, Salary,
+        AVG(Salary) OVER() AS CompanyAvgSalary
+    FROM HR.EMP_Details;
+    ```
+*   **Output Result Set:** The overall average (70000) is displayed on each row.
+    ```
+    +------------+--------+------------------+
+    | EmployeeID | Salary | CompanyAvgSalary |
+    +------------+--------+------------------+
+    | 1000       | 60000  | 70000.00         |
+    | 1001       | 75000  | 70000.00         |
+    | 1002       | 90000  | 70000.00         |
+    | 1003       | 55000  | 70000.00         |
+    +------------+--------+------------------+
+    ```
+*   **Key Takeaway:** An empty `OVER()` clause makes the window function operate over the entire result set, providing global aggregates alongside detail rows.
+
+</details>
+
 **b) Partitioning (`PARTITION BY`)**
 
 ```sql
@@ -44,6 +80,44 @@ FROM HR.EMP_Details;
 
 *   **Explanation:** `PARTITION BY DepartmentID` divides the data into separate windows, one for each department. The `AVG(Salary)` is calculated independently within each department's window. Each employee row shows their salary and the average salary *for their specific department*.
 
+<details>
+<summary>Click to see Example Visualization (Partitioning)</summary>
+
+*   **Input Table (`HR.EMP_Details` - Conceptual Snippet):**
+    ```
+    +------------+--------------+--------+
+    | EmployeeID | DepartmentID | Salary |
+    +------------+--------------+--------+
+    | 1004       | 1            | 62000  |
+    | 1005       | 1            | 48000  |
+    | 1000       | 2            | 60000  |
+    | 1001       | 2            | 75000  |
+    | 1002       | 3            | 90000  |
+    +------------+--------------+--------+
+    ```
+*   **Conceptual Averages:** Dept 1 Avg = 55000, Dept 2 Avg = 67500, Dept 3 Avg = 90000
+*   **Example Query:**
+    ```sql
+    SELECT EmployeeID, DepartmentID, Salary,
+        AVG(Salary) OVER(PARTITION BY DepartmentID) AS DeptAvgSalary
+    FROM HR.EMP_Details;
+    ```
+*   **Output Result Set:** Each row shows the average salary calculated only within its own department partition.
+    ```
+    +------------+--------------+--------+---------------+
+    | EmployeeID | DepartmentID | Salary | DeptAvgSalary |
+    +------------+--------------+--------+---------------+
+    | 1004       | 1            | 62000  | 55000.00      |
+    | 1005       | 1            | 48000  | 55000.00      |
+    | 1000       | 2            | 60000  | 67500.00      |
+    | 1001       | 2            | 75000  | 67500.00      |
+    | 1002       | 3            | 90000  | 90000.00      |
+    +------------+--------------+--------+---------------+
+    ```
+*   **Key Takeaway:** `PARTITION BY` divides the data, and the window function restarts its calculation for each partition.
+
+</details>
+
 **c) Ordering within Partitions (`ORDER BY` in `OVER`)**
 
 ```sql
@@ -53,6 +127,45 @@ FROM HR.EMP_Details;
 ```
 
 *   **Explanation:** `ORDER BY Salary` within the `OVER` clause defines the order for order-dependent calculations like running totals. Here, `SUM(Salary)` calculates the cumulative sum of salaries within each department, ordered from lowest to highest salary. The default frame (`RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`) is used.
+
+<details>
+<summary>Click to see Example Visualization (Ordering within Partitions)</summary>
+
+*   **Input Table (`HR.EMP_Details` - Conceptual Snippet):**
+    ```
+    +------------+--------------+--------+
+    | EmployeeID | DepartmentID | Salary |
+    +------------+--------------+--------+
+    | 1005       | 1            | 48000  |
+    | 1004       | 1            | 62000  |
+    | 1003       | 2            | 55000  |
+    | 1000       | 2            | 60000  |
+    | 1001       | 2            | 75000  |
+    | 1002       | 3            | 90000  |
+    +------------+--------------+--------+
+    ```
+*   **Example Query:**
+    ```sql
+    SELECT EmployeeID, DepartmentID, Salary,
+        SUM(Salary) OVER(PARTITION BY DepartmentID ORDER BY Salary ASC) AS RunningDeptTotal
+    FROM HR.EMP_Details;
+    ```
+*   **Output Result Set:** Shows the running total of salary within each department, ordered by salary ascending.
+    ```
+    +------------+--------------+--------+------------------+
+    | EmployeeID | DepartmentID | Salary | RunningDeptTotal |
+    +------------+--------------+--------+------------------+
+    | 1005       | 1            | 48000  | 48000            | <- Dept 1: 48k
+    | 1004       | 1            | 62000  | 110000           | <- Dept 1: 48k + 62k
+    | 1003       | 2            | 55000  | 55000            | <- Dept 2: 55k
+    | 1000       | 2            | 60000  | 115000           | <- Dept 2: 55k + 60k
+    | 1001       | 2            | 75000  | 190000           | <- Dept 2: 55k + 60k + 75k
+    | 1002       | 3            | 90000  | 90000            | <- Dept 3: 90k
+    +------------+--------------+--------+------------------+
+    ```
+*   **Key Takeaway:** `ORDER BY` within `OVER()` is crucial for functions like running totals, defining the sequence in which rows are processed for the cumulative calculation within each partition.
+
+</details>
 
 **d) Ranking Functions (`ROW_NUMBER`, `RANK`, `DENSE_RANK`)**
 
@@ -69,6 +182,47 @@ FROM HR.EMP_Details;
     *   `RANK()`: Assigns the same rank for ties, skips subsequent ranks (1, 1, 3...).
     *   `DENSE_RANK()`: Assigns the same rank for ties, does not skip ranks (1, 1, 2...).
 
+<details>
+<summary>Click to see Example Visualization (Ranking Functions)</summary>
+
+*   **Input Table (`HR.EMP_Details` - Conceptual Snippet with Ties):**
+    ```
+    +------------+--------------+--------+
+    | EmployeeID | DepartmentID | Salary |
+    +------------+--------------+--------+
+    | 1001       | 2            | 75000  | <- Highest in Dept 2
+    | 1000       | 2            | 60000  |
+    | 1003       | 2            | 55000  |
+    | 1004       | 1            | 62000  | <- Highest in Dept 1 (Tie)
+    | 1005       | 1            | 62000  | <- Highest in Dept 1 (Tie)
+    | 1006       | 1            | 48000  |
+    +------------+--------------+--------+
+    ```
+*   **Example Query:**
+    ```sql
+    SELECT EmployeeID, DepartmentID, Salary,
+        ROW_NUMBER() OVER(PARTITION BY DepartmentID ORDER BY Salary DESC) AS RowNum,
+        RANK()       OVER(PARTITION BY DepartmentID ORDER BY Salary DESC) AS SalaryRank,
+        DENSE_RANK() OVER(PARTITION BY DepartmentID ORDER BY Salary DESC) AS DenseRank
+    FROM HR.EMP_Details;
+    ```
+*   **Output Result Set:** Shows different ranking results within each department based on salary.
+    ```
+    +------------+--------------+--------+--------+------------+-----------+
+    | EmployeeID | DepartmentID | Salary | RowNum | SalaryRank | DenseRank |
+    +------------+--------------+--------+--------+------------+-----------+
+    | 1004       | 1            | 62000  | 1      | 1          | 1         | <- Dept 1
+    | 1005       | 1            | 62000  | 2      | 1          | 1         |
+    | 1006       | 1            | 48000  | 3      | 3          | 2         |
+    | 1001       | 2            | 75000  | 1      | 1          | 1         | <- Dept 2
+    | 1000       | 2            | 60000  | 2      | 2          | 2         |
+    | 1003       | 2            | 55000  | 3      | 3          | 3         |
+    +------------+--------------+--------+--------+------------+-----------+
+    ```
+*   **Key Takeaway:** `ROW_NUMBER`, `RANK`, and `DENSE_RANK` provide different ways to rank rows within partitions, differing primarily in how they handle ties.
+
+</details>
+
 **e) `NTILE(N)`**
 
 ```sql
@@ -78,6 +232,45 @@ FROM HR.EMP_Details;
 ```
 
 *   **Explanation:** Divides the rows within each partition (or the whole set if no `PARTITION BY`) into `N` roughly equal groups based on the `ORDER BY` clause and assigns a group number (1 to N). Useful for creating percentiles, quartiles, deciles, etc.
+
+<details>
+<summary>Click to see Example Visualization (NTILE)</summary>
+
+*   **Input Table (`HR.EMP_Details` - Conceptual Snippet):**
+    ```
+    +------------+--------+
+    | EmployeeID | Salary |
+    +------------+--------+
+    | 1005       | 48000  |
+    | 1003       | 55000  |
+    | 1000       | 60000  |
+    | 1004       | 62000  |
+    | 1001       | 75000  |
+    | 1002       | 90000  |
+    +------------+--------+
+    ```
+*   **Example Query:** Divide employees into 4 salary quartiles.
+    ```sql
+    SELECT EmployeeID, Salary,
+        NTILE(4) OVER(ORDER BY Salary) AS SalaryQuartile
+    FROM HR.EMP_Details;
+    ```
+*   **Output Result Set:** Assigns each employee to one of 4 groups based on salary order. (6 rows / 4 groups = groups 1 & 2 get 2 rows, groups 3 & 4 get 1 row).
+    ```
+    +------------+--------+----------------+
+    | EmployeeID | Salary | SalaryQuartile |
+    +------------+--------+----------------+
+    | 1005       | 48000  | 1              |
+    | 1003       | 55000  | 1              |
+    | 1000       | 60000  | 2              |
+    | 1004       | 62000  | 2              |
+    | 1001       | 75000  | 3              |
+    | 1002       | 90000  | 4              |
+    +------------+--------+----------------+
+    ```
+*   **Key Takeaway:** `NTILE(N)` distributes rows as evenly as possible into N ordered groups (tiles).
+
+</details>
 
 **f) Offset Functions (`LAG`, `LEAD`)**
 
@@ -93,6 +286,42 @@ FROM HR.EMP_Details;
     *   `LAG(Column, offset, default)`: Gets `Column` value from `offset` rows before the current row. Returns `default` if the offset row doesn't exist. Default offset is 1, default `default` is `NULL`.
     *   `LEAD(...)`: Similar but looks forward.
 
+<details>
+<summary>Click to see Example Visualization (LAG/LEAD)</summary>
+
+*   **Input Table (`HR.EMP_Details` - Conceptual Snippet, ordered by HireDate):**
+    ```
+    +------------+------------+--------+
+    | EmployeeID | HireDate   | Salary |
+    +------------+------------+--------+
+    | 1002       | 2020-05-20 | 90000  |
+    | 1001       | 2021-03-10 | 75000  |
+    | 1000       | 2022-01-15 | 60000  |
+    | 1004       | 2022-11-30 | 62000  |
+    +------------+------------+--------+
+    ```
+*   **Example Query:**
+    ```sql
+    SELECT EmployeeID, HireDate, Salary,
+        LAG(Salary, 1, 0) OVER(ORDER BY HireDate) AS PreviousSalary, -- Salary of previous hire, default 0
+        LEAD(Salary) OVER(ORDER BY HireDate) AS NextSalary       -- Salary of next hire, default NULL
+    FROM HR.EMP_Details;
+    ```
+*   **Output Result Set:** Shows the salary of the employee hired just before and just after the current row's employee.
+    ```
+    +------------+------------+--------+----------------+------------+
+    | EmployeeID | HireDate   | Salary | PreviousSalary | NextSalary |
+    +------------+------------+--------+----------------+------------+
+    | 1002       | 2020-05-20 | 90000  | 0              | 75000      | <- First row, LAG gets default 0
+    | 1001       | 2021-03-10 | 75000  | 90000          | 60000      |
+    | 1000       | 2022-01-15 | 60000  | 75000          | 62000      |
+    | 1004       | 2022-11-30 | 62000  | 60000          | NULL       | <- Last row, LEAD gets default NULL
+    +------------+------------+--------+----------------+------------+
+    ```
+*   **Key Takeaway:** `LAG` and `LEAD` allow accessing data from adjacent rows based on a specified order, useful for comparing consecutive records.
+
+</details>
+
 **g) Boundary Functions (`FIRST_VALUE`, `LAST_VALUE`)**
 
 ```sql
@@ -105,6 +334,45 @@ FROM HR.EMP_Details;
 
 *   **Explanation:** Retrieve the value of an expression from the first (`FIRST_VALUE`) or last (`LAST_VALUE`) row within the defined window frame.
 *   **Important Frame Note:** The default frame for `ORDER BY` often ends at `CURRENT ROW`. To make `LAST_VALUE` correctly find the last value in the *entire partition*, you usually need to explicitly define the frame to cover the whole partition (e.g., `ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING` or `RANGE ...`).
+
+<details>
+<summary>Click to see Example Visualization (FIRST_VALUE/LAST_VALUE)</summary>
+
+*   **Input Table (`HR.EMP_Details` - Conceptual Snippet):**
+    ```
+    +------------+--------------+--------+
+    | EmployeeID | DepartmentID | Salary |
+    +------------+--------------+--------+
+    | 1005       | 1            | 48000  | <- Lowest in Dept 1
+    | 1004       | 1            | 62000  | <- Highest in Dept 1
+    | 1003       | 2            | 55000  | <- Lowest in Dept 2
+    | 1000       | 2            | 60000  |
+    | 1001       | 2            | 75000  | <- Highest in Dept 2
+    +------------+--------------+--------+
+    ```
+*   **Example Query:** Find highest and lowest salary within each department.
+    ```sql
+    SELECT EmployeeID, DepartmentID, Salary,
+        FIRST_VALUE(Salary) OVER(PARTITION BY DepartmentID ORDER BY Salary DESC) AS HighestInDept,
+        LAST_VALUE(Salary) OVER(PARTITION BY DepartmentID ORDER BY Salary DESC
+            ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS LowestInDept -- Need full frame for LAST_VALUE
+    FROM HR.EMP_Details;
+    ```
+*   **Output Result Set:** Shows the highest and lowest salary within the employee's department on each row.
+    ```
+    +------------+--------------+--------+---------------+--------------+
+    | EmployeeID | DepartmentID | Salary | HighestInDept | LowestInDept |
+    +------------+--------------+--------+---------------+--------------+
+    | 1004       | 1            | 62000  | 62000         | 48000        |
+    | 1005       | 1            | 48000  | 62000         | 48000        |
+    | 1001       | 2            | 75000  | 75000         | 55000        |
+    | 1000       | 2            | 60000  | 75000         | 55000        |
+    | 1003       | 2            | 55000  | 75000         | 55000        |
+    +------------+--------------+--------+---------------+--------------+
+    ```
+*   **Key Takeaway:** `FIRST_VALUE` and `LAST_VALUE` retrieve values from the boundaries of the window frame. Remember to specify the full frame for `LAST_VALUE` when using `ORDER BY` if you want the true last value of the partition.
+
+</details>
 
 **h) Window Frame Specification (`ROWS`/`RANGE`/`GROUPS BETWEEN ...`)**
 
@@ -120,6 +388,43 @@ FROM HR.EMP_Details;
     *   `GROUPS` (SQL 2022+): Defines the frame based on groups of distinct values in the `ORDER BY` clause.
     *   Common boundaries: `UNBOUNDED PRECEDING`, `N PRECEDING`, `CURRENT ROW`, `N FOLLOWING`, `UNBOUNDED FOLLOWING`.
 
+<details>
+<summary>Click to see Example Visualization (Window Frame)</summary>
+
+*   **Input Table (`HR.EMP_Details` - Conceptual Snippet, ordered by HireDate):**
+    ```
+    +------------+------------+--------+
+    | EmployeeID | HireDate   | Salary |
+    +------------+------------+--------+
+    | 1002       | 2020-05-20 | 90000  |
+    | 1001       | 2021-03-10 | 75000  |
+    | 1000       | 2022-01-15 | 60000  |
+    | 1004       | 2022-11-30 | 62000  |
+    | 1005       | 2023-02-20 | 48000  |
+    +------------+------------+--------+
+    ```
+*   **Example Query:** Calculate 3-employee moving average salary based on hire date.
+    ```sql
+    SELECT EmployeeID, HireDate, Salary,
+        AVG(Salary) OVER(ORDER BY HireDate ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) AS MovingAvg3Employees
+    FROM HR.EMP_Details;
+    ```
+*   **Output Result Set:** Shows the average salary considering the current row, the previous row, and the next row based on HireDate order.
+    ```
+    +------------+------------+--------+---------------------+
+    | EmployeeID | HireDate   | Salary | MovingAvg3Employees |
+    +------------+------------+--------+---------------------+
+    | 1002       | 2020-05-20 | 90000  | 82500.00            | -- Avg(90k, 75k)
+    | 1001       | 2021-03-10 | 75000  | 75000.00            | -- Avg(90k, 75k, 60k)
+    | 1000       | 2022-01-15 | 60000  | 65666.66            | -- Avg(75k, 60k, 62k)
+    | 1004       | 2022-11-30 | 62000  | 56666.66            | -- Avg(60k, 62k, 48k)
+    | 1005       | 2023-02-20 | 48000  | 55000.00            | -- Avg(62k, 48k)
+    +------------+------------+--------+---------------------+
+    ```
+*   **Key Takeaway:** The frame clause (`ROWS`/`RANGE`/`GROUPS BETWEEN...`) precisely defines the set of rows within the partition used for aggregate window functions relative to the current row.
+
+</details>
+
 **i) Named Windows (`WINDOW` Clause)**
 
 ```sql
@@ -132,6 +437,45 @@ WINDOW w AS (PARTITION BY DepartmentID); -- Define window 'w' once
 
 *   **Explanation:** Defines a window specification with a name (`w`) using the `WINDOW` clause (placed after `WHERE`/`GROUP BY`/`HAVING`). This named window can then be referenced in the `OVER` clause of multiple window functions, improving readability and maintainability if the same window definition is used repeatedly.
 
+<details>
+<summary>Click to see Example Visualization (Named Windows)</summary>
+
+*   **Input Table (`HR.EMP_Details` - Conceptual Snippet):**
+    ```
+    +------------+--------------+--------+
+    | EmployeeID | DepartmentID | Salary |
+    +------------+--------------+--------+
+    | 1004       | 1            | 62000  |
+    | 1005       | 1            | 48000  |
+    | 1000       | 2            | 60000  |
+    | 1001       | 2            | 75000  |
+    | 1002       | 3            | 90000  |
+    +------------+--------------+--------+
+    ```
+*   **Example Query:**
+    ```sql
+    SELECT EmployeeID, DepartmentID, Salary,
+        AVG(Salary) OVER w AS DeptAvgSalary, -- Use named window 'w'
+        MAX(Salary) OVER w AS DeptMaxSalary  -- Use named window 'w'
+    FROM HR.EMP_Details
+    WINDOW w AS (PARTITION BY DepartmentID); -- Define window 'w' once
+    ```
+*   **Output Result Set:** Both window functions use the same partition definition specified in the `WINDOW` clause.
+    ```
+    +------------+--------------+--------+---------------+---------------+
+    | EmployeeID | DepartmentID | Salary | DeptAvgSalary | DeptMaxSalary |
+    +------------+--------------+--------+---------------+---------------+
+    | 1004       | 1            | 62000  | 55000.00      | 62000         |
+    | 1005       | 1            | 48000  | 55000.00      | 62000         |
+    | 1000       | 2            | 60000  | 67500.00      | 75000         |
+    | 1001       | 2            | 75000  | 67500.00      | 75000         |
+    | 1002       | 3            | 90000  | 90000.00      | 90000         |
+    +------------+--------------+--------+---------------+---------------+
+    ```
+*   **Key Takeaway:** The `WINDOW` clause allows defining reusable window specifications, reducing redundancy when multiple window functions share the same `PARTITION BY`/`ORDER BY`/frame logic.
+
+</details>
+
 **j) Window Functions with Aggregates (Conceptual)**
 
 ```sql
@@ -143,6 +487,49 @@ GROUP BY YEAR(HireDate), DepartmentID;
 ```
 
 *   **Explanation:** Window functions are processed logically *after* `GROUP BY` aggregates. This allows you to perform window calculations (like `SUM(...) OVER(...)`) on the results of aggregate functions (`COUNT(*)` in this case).
+
+<details>
+<summary>Click to see Example Visualization (Window Fn with Aggregates)</summary>
+
+*   **Conceptual Grouped Result (Input to Window Function):**
+    ```
+    +----------+--------------+-----------+
+    | HireYear | DepartmentID | HireCount |
+    +----------+--------------+-----------+
+    | 2021     | 2            | 1         |
+    | 2022     | 1            | 1         |
+    | 2022     | 2            | 1         |
+    | 2022     | 3            | 1         |
+    | 2023     | 1            | 1         |
+    | 2023     | 2            | 1         |
+    +----------+--------------+-----------+
+    ```
+*   **Example Query (Simplified):**
+    ```sql
+    SELECT
+        YEAR(HireDate) AS HireYear,
+        DepartmentID,
+        COUNT(*) AS DeptHireCount,
+        SUM(COUNT(*)) OVER(PARTITION BY YEAR(HireDate)) AS YearlyTotalHires -- Window Fn on COUNT(*)
+    FROM HR.EMP_Details
+    GROUP BY YEAR(HireDate), DepartmentID;
+    ```
+*   **Output Result Set:** The `YearlyTotalHires` is calculated by the window function operating on the `DeptHireCount` values produced by the `GROUP BY`.
+    ```
+    +----------+--------------+---------------+------------------+
+    | HireYear | DepartmentID | DeptHireCount | YearlyTotalHires |
+    +----------+--------------+---------------+------------------+
+    | 2021     | 2            | 1             | 1                | -- Total for 2021 = 1
+    | 2022     | 1            | 1             | 3                | -- Total for 2022 = 1+1+1
+    | 2022     | 2            | 1             | 3                |
+    | 2022     | 3            | 1             | 3                |
+    | 2023     | 1            | 1             | 2                | -- Total for 2023 = 1+1
+    | 2023     | 2            | 1             | 2                |
+    +----------+--------------+---------------+------------------+
+    ```
+*   **Key Takeaway:** Window functions can be applied to the results of standard aggregations, enabling calculations across grouped summary data.
+
+</details>
 
 ## 3. Targeted Interview Questions (Based on `32_select_window_functions.sql`)
 
