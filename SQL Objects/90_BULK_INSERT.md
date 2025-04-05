@@ -61,7 +61,7 @@ This script demonstrates various uses and options of the `BULK INSERT` command.
         CHECK_CONSTRAINTS       -- Enforce CHECK and FOREIGN KEY constraints
     );
     ```
-    *   **Explanation:** Loads data, skipping the header, using standard CSV delimiters. It will fail if any row violates table constraints or if any other error occurs.
+    *   **Explanation:** Loads data, skipping the header, using standard CSV delimiters. It will fail if any row violates table constraints or if any other error occurs. *Note: File paths like 'C:\HR_Data\...' need to exist and be accessible by the SQL Server service account.*
 
 **Part 2: Advanced Options**
 

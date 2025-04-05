@@ -45,7 +45,7 @@ ALTER EVENT SESSION HR_Performance_Monitoring ON SERVER STATE = START; -- Start 
 GO
 ```
 
-*   **Explanation:** Creates a session to capture completed SQL statements and batches specifically for the `HRSystem` database. It collects associated actions like the SQL text and database name. Data is written to `.xel` files in the specified path.
+*   **Explanation:** Creates a session to capture completed SQL statements and batches specifically for the `HRSystem` database. It collects associated actions like the SQL text and database name. Data is written to `.xel` files in the specified path. *Note: The file path `C:\SQLEvents\` must exist and be writable by the SQL Server service account.*
 
 **Part 2: Deadlock Monitoring Session**
 
@@ -97,13 +97,14 @@ GO
 
 ## 3. Targeted Interview Questions (Based on `93_EXTENDED_EVENTS.sql`)
 
-**Question 1:** What are the main components of an Extended Events session definition?
+**Question 1:** What are the main components of an Extended Events session definition as shown in the script examples?
 
-**Solution 1:** The main components are:
-1.  **Events:** The specific points in SQL Server execution to monitor (e.g., `sql_statement_completed`).
-2.  **Actions:** Additional data to collect when an event fires (e.g., `sql_text`, `session_id`).
-3.  **Predicates:** Filters applied to events to reduce the amount of data captured (e.g., `WHERE database_name = 'HRSystem'`).
-4.  **Targets:** The destination for the captured event data (e.g., `event_file`, `ring_buffer`).
+**Solution 1:** The main components shown are:
+1.  **`EVENT SESSION` Name:** A unique name for the session (e.g., `HR_Performance_Monitoring`).
+2.  **`EVENT`:** The specific points in SQL Server execution to monitor (e.g., `sqlserver.sql_statement_completed`, `sqlserver.xml_deadlock_report`).
+3.  **`ACTION`:** Additional data collected when an event fires (e.g., `sqlserver.sql_text`, `sqlserver.database_name`).
+4.  **`WHERE` (Predicate):** Filters applied to events to reduce the amount of data captured (e.g., `WHERE database_name = N'HRSystem'`).
+5.  **`TARGET`:** The destination for the captured event data (e.g., `package0.event_file` with specific file settings).
 
 **Question 2:** The script creates a session `HR_Query_Analysis` with the predicate `WHERE database_name = N'HRSystem' AND duration > 1000000`. What is the purpose of this predicate, and why is filtering important for XEvents?
 

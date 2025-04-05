@@ -46,7 +46,7 @@ GO
 
 *   **Explanation:**
     *   Creates a server-level audit named `HR_System_Audit`.
-    *   Specifies the destination `TO FILE` with a path, max file size, and rollover file count.
+    *   Specifies the destination `TO FILE` with a path, max file size, and rollover file count. *Note: The specified `FILEPATH` must exist and the SQL Server service account needs write permissions.*
     *   `QUEUE_DELAY`: Milliseconds SQL Server can wait before forcing audit writes to disk.
     *   `ON_FAILURE`: Action if audit write fails (`CONTINUE`, `SHUTDOWN`, `FAIL_OPERATION`). `CONTINUE` logs the failure but allows the original operation to proceed (potential audit loss). `SHUTDOWN` stops the instance (drastic!). `FAIL_OPERATION` causes the user action that triggered the audit event to fail.
     *   `ALTER SERVER AUDIT ... WITH (STATE = ON)` activates the audit to start collecting records.
